@@ -9,7 +9,7 @@
     >
 
     <CalendarView
-        android:id="@+id/calenderView"
+        android:id="@+id/calView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
@@ -21,13 +21,13 @@
         android:layout_marginTop="10dp"
         android:hint="할 일"
         android:inputType="text"
-        android:text="" />
+        android:text=""
+         />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_margin="16dp"
-
         >
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

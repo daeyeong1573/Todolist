@@ -8,6 +8,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import io.realm.Realm
 import io.realm.kotlin.createObject
 import io.realm.kotlin.where
+import kotlinx.android.synthetic.main.activity_edit.*
 import org.jetbrains.anko.alert
 import org.jetbrains.anko.calendarView
 import org.jetbrains.anko.yesButton
@@ -15,25 +16,24 @@ import java.util.*
 
 class EditActivity : AppCompatActivity() {
 
-    val realm = Realm.getDefaultInstance() //인스턴스 얻기
+   private val realm = Realm.getDefaultInstance() //인스턴스 얻기
     //추가코드
-    val calendar: Calendar = Calendar.getInstance() //날짜를 다룰 캘린더 객체생성
+    private val calendar: Calendar = Calendar.getInstance() //날짜를 다룰 캘린더 객체생성
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit)
-        val calendarView = findViewById<CalendarView>(R.id.calenderView)
         //업데이트 조건 1
         val id = intent.getLongExtra("id", -1L)
         if (id == -1L) {
-            insertTodo()
+            insertMode()
         } else {
-            updateTodo(id)
+            updateMode(id)
         }
 
         //캘린더 뷰의 날짜를 선택했을 때 Calendar 객체에 설정 2
-        calendarView.setOnDateChangeListener { _ : CalendarView, year, month, dayOfMonth ->
+        calView.setOnDateChangeListener { _ : CalendarView, year, month, dayOfMonth ->
             calendar.set(Calendar.YEAR, year)
             calendar.set(Calendar.MONTH, month)
             calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
@@ -44,11 +44,9 @@ class EditActivity : AppCompatActivity() {
     // 추가 모드 초기화 3
     private fun insertMode() {
         // 삭제 버튼을 감추기 4
-        val deleteFab = findViewById<FloatingActionButton>(R.id.deleteFab)
         deleteFab.hide()
 
         // 완료 버튼을 클릭하면 추가 5
-        val doneFab = findViewById<FloatingActionButton>(R.id.doneFab)
         doneFab.setOnClickListener {
             insertTodo()
         }
@@ -56,23 +54,19 @@ class EditActivity : AppCompatActivity() {
 
     // 수정 모드 초기화 6
     private fun updateMode(id: Long) {
-        val calendarView = findViewById<CalendarView>(R.id.calenderView)
         // id에 해당하는 객체를 화면에 표시 7
-        val todoEditText = findViewById<EditText>(R.id.editText)
         realm.where<Todo>().equalTo("id", id)
             .findFirst()?.apply {
-                todoEditText.setText(title)
-                calendarView.date = date
+                editText.setText(title)
+               calView.date = date
             }
 
         // 완료 버튼을 클릭하면 수정 8
-        val doneFab = findViewById<FloatingActionButton>(R.id.doneFab)
         doneFab.setOnClickListener {
             updateTodo(id)
         }
 
         // 삭제 버튼을 클릭하면 삭제 9
-        val deleteFab = findViewById<FloatingActionButton>(R.id.deleteFab)
         deleteFab.setOnClickListener {
             deleteTodo(id)
         }
@@ -89,8 +83,7 @@ class EditActivity : AppCompatActivity() {
     private fun insertTodo() {
         realm.beginTransaction()
         val todo = realm.createObject<Todo>(nextId())
-        val todoEditText = findViewById<EditText>(R.id.editText)
-        todo.title = todoEditText.text.toString()
+        todo.title = editText.text.toString()
         todo.date = calendar.timeInMillis
         realm.commitTransaction()
 
@@ -110,12 +103,11 @@ class EditActivity : AppCompatActivity() {
 
 
     private fun updateTodo(id: Long) {
-        val todoEditText = findViewById<EditText>(R.id.editText)
         realm.where<Todo>().equalTo("id", id)
             .findFirst()?.apply {
                 realm.beginTransaction() //트랜잭션 시작
                 //값 추가
-                title = todoEditText.text.toString()
+                title = editText.text.toString()
                 date = calendar.timeInMillis
                 realm.commitTransaction() //트랜잭션 종료
             }
