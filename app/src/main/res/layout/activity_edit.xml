@@ -39,6 +39,7 @@
             android:clickable="true"
             android:src="@drawable/ic_baseline_done_24"
             app:backgroundTint="#82E7F4" />
+
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/deleteFab"
             android:layout_width="wrap_content"
